@@ -1,81 +1,97 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
-</script>
-
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
+  <div class="todo-app h-100">
+    <app-header />
 
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
+    <div class="container-fluid p-3 h-100">
+      <div class="d-grid gap-3 h-100" style="grid-template-columns: 2fr 3fr;">
+        <notes-display
+          :notes="notes"
+          @createNote="createNote"
+          @pickNote="pickNote"
+          @deleteNote="deleteNote"
+          @edit="editNote"
+        />
+        <picked-note :note="pickedNote"/>
+      </div>
     </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
+  </div>
 </template>
 
+<script>
+import AppHeader from "./components/AppHeader.vue"
+import PickedNote from "./components/PickedNote.vue";
+import NotesDisplay from "./components/NotesDisplay.vue";
+import TodoForm from "@/components/TodoForm.vue";
+import TodoList from "@/components/TodoList.vue";
+
+export default {
+  components: {
+    AppHeader, TodoForm, TodoList, NotesDisplay, PickedNote
+  },
+
+  data() {
+    return {
+      notes: [
+        { title: 'gggg', id: 1},
+        { title: 'dddd', id: 2},
+        { title: 'ggxzcvz', id: 3}
+      ],
+      pickedNote: null,
+
+      todos: [
+        { id: 1, title: 'clean my room', body: 'clean all my room everywhere', completed: true },
+        { id: 2, title: 'cook dinner', body: 'cook some pasta for dinner', completed: false },
+        { id: 3, title: 'study programming', body: 'do much practice with redux', completed: false },
+      ],
+    }
+  },
+
+  methods: {
+    createNote(note) {
+      this.notes.push(note);
+    },
+
+    deleteNote(note) {
+      this.notes = this.notes.filter(n => n.id !== note.id);
+    },
+
+    editNote(note) {
+      console.log(note);
+      this.notes = this.notes.map(n => n.id !== note.id ? n : note);
+    },
+
+    pickNote(note) {
+      this.pickedNote = this.notes.find(n => n.id = note.id);
+    },
+
+    createTodo(todo) {
+      this.todos.push(todo);
+    },
+
+    deleteTodo(todoId) {
+      this.todos = this.todos.filter(todo => todo.id !== todoId);
+    },
+
+    changeTodoStatus(todoId) {
+      this.todos = this.todos.map(todo => todo.id !== todoId ? todo : { ...todo, completed: !todo.completed});
+    }
+  }
+}
+</script>
+
 <style>
-@import './assets/base.css';
+@import url('https://fonts.googleapis.com/css2?family=Courgette&display=swap');
 
-#app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-
-  font-weight: normal;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-header {
-  line-height: 1.5;
+body {
+  height: 80vh;
+  --sexy-purple: #6A0DAD;
+  --sexy-yellow: #FFCC00;
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-a,
-.green {
-  text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
-}
-
-@media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
-  }
-}
-
-@media (min-width: 1024px) {
-  body {
-    display: flex;
-    place-items: center;
-  }
-
-  #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
-  }
-
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-}
 </style>
